@@ -1,0 +1,53 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Snake Sketch</title>
+</head>
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+ <body>
+ <script>
+    let points = [];
+
+function setup() {
+  createCanvas(600, 400);
+  strokeWeight(20);
+  strokeJoin(ROUND);
+  noFill();
+}
+
+function draw() {
+  background(20, 20, 60);
+  
+  let p = createVector(mouseX, mouseY);
+  points.push(p);
+  
+  
+  if (points.length > 50) {
+    points.shift();
+  }
+
+for (let i = 0; i < points.length; i++) {
+    let size = map(i, 0, points.length - 1, 8, 20); 
+    fill(100, 255 - i * 4, 100); 
+    ellipse(points[i].x, points[i].y, size, size);
+  }
+
+
+  if (points.length > 2) {
+    let head = points[points.length - 1];
+    fill(255, 0, 0);
+    noStroke();
+    ellipse(head.x - 5, head.y - 5, 5);
+    ellipse(head.x + 5, head.y - 5, 5);
+  }
+}
+
+
+
+</script>
+</body>
+
+
+</html>
