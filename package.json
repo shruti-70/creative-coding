@@ -1,6 +1,10 @@
 {
   "dependencies": {
     "animejs": "^4.0.2",
+    "serve": "^14.2.4",
     "three": "^0.178.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
   }
 }
