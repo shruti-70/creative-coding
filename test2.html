@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gradient Line Background</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+  <script>
+    // Scene, Orthographic Camera, Renderer
+    const scene = new THREE.Scene();
+    const aspect = window.innerWidth / window.innerHeight;
+    const camera = new THREE.OrthographicCamera(-aspect * 10, aspect * 10, 10, -10, 0.1, 1000);
+    camera.position.z = 10;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Create gradient lines
+    const lines = [];
+    const lineCount = 30;
+    const pointCount = 100;
+
+    for (let j = 0; j < lineCount; j++) {
+      const points = [];
+      const yPos = j * 0.5 - (lineCount * 0.25);
+      for (let i = 0; i < pointCount; i++) {
+        points.push(new THREE.Vector3(i * 0.2 - 10, yPos + Math.sin(i * 0.2 + j) * 0.5, 0));
+      }
+
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+      const colorStart = new THREE.Color().setHSL(Math.random(), 1.0, 0.5);
+      const colorEnd = new THREE.Color().setHSL(Math.random(), 1.0, 0.5);
+      const colors = [];
+
+      for (let i = 0; i < pointCount; i++) {
+        const t = i / (pointCount - 1);
+        const color = colorStart.clone().lerp(colorEnd, t);
+        colors.push(color.r, color.g, color.b);
+      }
+
+      geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+      const material = new THREE.LineBasicMaterial({ vertexColors: true });
+      const line = new THREE.Line(geometry, material);
+      line.userData.offset = Math.random() * 10;
+      lines.push(line);
+      scene.add(line);
+    }
+
+    // Animation loop
+    function animate(time) {
+      requestAnimationFrame(animate);
+
+      lines.forEach((line) => {
+        const positions = line.geometry.attributes.position.array;
+        const colors = line.geometry.attributes.color.array;
+
+        for (let i = 0; i < pointCount; i++) {
+          const idx = i * 3;
+          const yBase = line.position.y;
+          positions[idx + 1] = yBase + Math.sin(i * 0.2 + time * 0.001 + line.userData.offset) * 0.5;
+
+          const t = i / (pointCount - 1);
+          const hue = (t + time * 0.0002 + line.userData.offset * 0.1) % 1.0;
+          const color = new THREE.Color().setHSL(hue, 1.0, 0.5);
+          colors[idx] = color.r;
+          colors[idx + 1] = color.g;
+          colors[idx + 2] = color.b;
+        }
+
+        line.geometry.attributes.position.needsUpdate = true;
+        line.geometry.attributes.color.needsUpdate = true;
+      });
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      const aspect = window.innerWidth / window.innerHeight;
+      camera.left = -aspect * 10;
+      camera.right = aspect * 10;
+      camera.top = 10;
+      camera.bottom = -10;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
