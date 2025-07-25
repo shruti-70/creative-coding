@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Yellow Glowing Jelly Blob</title>
+    <style>
+      body { margin: 0; background: black; overflow: hidden; }
+      canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+      import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+      import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/RenderPass.js';
+      import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+
+      // Scene, Camera, Renderer
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.z = 5;
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      document.body.appendChild(renderer.domElement);
+
+      // Controls (optional)
+      const controls = new OrbitControls(camera, renderer.domElement);
+
+      // Lights
+      scene.add(new THREE.AmbientLight(0xffffff, 0.2));
+      const pointLight = new THREE.PointLight(0xffffff, 1.5);
+      pointLight.position.set(5, 5, 5);
+      scene.add(pointLight);
+
+      // Glowing yellow jelly material
+      const jellyMaterial = new THREE.MeshPhysicalMaterial({
+        transmission: 1,
+        thickness: 1.5,
+        roughness: 0.25,
+        metalness: 0.0,
+        clearcoat: 1,
+        clearcoatRoughness: 0.1,
+        ior: 1.2,
+        emissive: new THREE.Color(0xffff66),
+        emissiveIntensity: 1.2,
+        color: new THREE.Color("#fff099")
+      });
+
+      const geometry = new THREE.SphereGeometry(1, 64, 64);
+      const blob = new THREE.Mesh(geometry, jellyMaterial);
+      scene.add(blob);
+
+      const originalPositions = geometry.attributes.position.array.slice();
+
+      function deformBlob(t) {
+        const pos = geometry.attributes.position.array;
+        for (let i = 0; i < pos.length; i += 3) {
+          const ox = originalPositions[i];
+          const oy = originalPositions[i + 1];
+          const oz = originalPositions[i + 2];
+          const offset = 0.04 * Math.sin(t * 2 + ox * 3 + oy * 5 + oz * 4);
+          const scale = 1 + offset;
+          pos[i] = ox * scale;
+          pos[i + 1] = oy * scale;
+          pos[i + 2] = oz * scale;
+        }
+        geometry.attributes.position.needsUpdate = true;
+      }
+
+      // Postprocessing
+      const composer = new EffectComposer(renderer);
+      composer.setSize(window.innerWidth, window.innerHeight);
+
+      const renderPass = new RenderPass(scene, camera);
+      composer.addPass(renderPass);
+
+      const bloomPass = new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        1.2, // strength
+        0.4, // radius
+        0.1  // threshold
+      );
+      composer.addPass(bloomPass);
+
+      // Animation loop
+      function animate(time) {
+        requestAnimationFrame(animate);
+        const t = time * 0.001;
+        deformBlob(t);
+        blob.rotation.y += 0.002;
+        composer.render();
+      }
+
+      animate();
+
+      // Resize handler
+      window.addEventListener("resize", () => {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+        composer.setSize(w, h);
+      });
+    </script>
+  </body>
+</html>
