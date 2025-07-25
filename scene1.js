@@ -9,7 +9,6 @@ let mesh = new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 1),
     new THREE.MeshBasicMaterial({ color: "green"})
 );
-
 // mesh.position.z = -3;
 // rotation, poistion and scale
 // mesh.scale.z = 2;

@@ -1,16 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Three.js App</title>
-    
-</head>
-<body>
-    <canvas id ="cube">  </canvas>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js" integrity="sha512-vnmn/Qqn6aG0POAc9mIGzjq0IybrvxJXYDafNvp9JSnDGxeF3pbkSqLvf+YGd5ku63pT7sa/jxHn7/d0mU8+tA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="/scene1.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
+  <meta charset="utf-8" />
+  <title>Altiva Labs</title>
 
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+   html, body {
+  cursor: none;
+}
+
+
+ #custom-cursor {
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 9999px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  pointer-events: none;
+  mix-blend-mode: normal;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  transform: translate(-50%, -50%);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+  </style>
+</head>
+
+<body class="bg-pink-50 overflow-hidden antialiased">
+
+  <!-- Background Clouds -->
+  <canvas id="clouds" class="fixed top-0 left-0 w-full h-full z-0"></canvas>
+
+  <!-- Hero Section -->
+  <div class="relative z-10 flex items-center justify-center h-screen text-center px-6">
+    <div class="max-w-3xl mx-auto">
+      <h1 id="heroTitle" class="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-tight mb-6 cursor-pointer">
+        Altiva Labs
+      </h1>
+      <p class="text-xl md:text-2xl text-white/80 font-medium leading-relaxed mb-10">
+        Scaling ideas, seamlessly on a cloud that moves with you.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#start" class="bg-pink-500 hover:bg-pink-600 text-white font-medium text-lg py-3 px-8 rounded-full shadow-lg transition duration-300">
+          Get Started
+        </a>
+        <a href="#demo" class="text-pink-500 border border-pink-400 hover:bg-pink-100 text-lg font-medium py-3 px-8 rounded-full transition duration-300">
+          Watch Demo
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div id="custom-cursor"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="/clouds.js"></script>
+
+  <script>
+    // Cursor movement
+    const cursor = document.getElementById("custom-cursor");
+
+    window.addEventListener("mousemove", (e) => {
+      gsap.to(cursor, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.15,
+        ease: "power2.out"
+      });
+    });
+
+    // Enlarge on interactive elements
+    const hoverTargets = document.querySelectorAll("a, button, h1, p");
+
+   hoverTargets.forEach(el => {
+  el.addEventListener("mouseenter", () => {
+    gsap.to(cursor, {
+      scale: 2,
+      backgroundColor: "rgba(255, 255, 255, 0.6)", // slightly brighter
+      boxShadow: "0 0 30px rgba(255, 255, 255, 0.7)",
+      duration: 0.2
+    });
+  });
+
+  el.addEventListener("mouseleave", () => {
+    gsap.to(cursor, {
+      scale: 1,
+      backgroundColor: "rgba(255, 255, 255, 0.3)",
+      boxShadow: "0 0 20px rgba(255, 255, 255, 0.4)",
+      duration: 0.2
+    });
+  });
+});
+
+    // Title hover animation
+    const title = document.getElementById("heroTitle");
+    title.addEventListener("mouseenter", () => {
+      gsap.to(title, {
+        scale: 1.06,
+        rotateX: 12,
+        rotateY: -10,
+        textShadow: "0 0 40px rgba(255,255,255,0.85)",
+        duration: 0.6,
+        ease: "power3.out"
+      });
+    });
+
+    title.addEventListener("mouseleave", () => {
+      gsap.to(title, {
+        scale: 1,
+        rotateX: 0,
+        rotateY: 0,
+        textShadow: "0 0 0 rgba(0,0,0,0)",
+        duration: 0.5,
+        ease: "power2.inOut"
+      });
+    });
+  </script>
 </body>
 </html>
