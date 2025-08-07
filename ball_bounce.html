@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bouncing Ball Timeline (Click to Jump)</title>
+
+  <!-- GSAP CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0f0f0f;
+      color: white;
+      font-family: monospace;
+    }
+
+    .timeline {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 100px 0;
+    }
+
+    .ball {
+      width: 25px;
+      height: 25px;
+      background: red;
+      border-radius: 50%;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, 0);
+      z-index: 10;
+    }
+
+    .tile {
+      position: relative;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .tile-content {
+      width: 45%;
+      border-bottom: 2px solid white;
+      padding: 6px 10px;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+
+    .tile.left .tile-content {
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .tile.right .tile-content {
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .tile:hover .tile-content {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="timeline">
+    <div class="ball" id="ball"></div>
+
+    <div class="tile left" data-index="0"><div class="tile-content">🛠️ Internship at Studio A</div></div>
+    <div class="tile right" data-index="1"><div class="tile-content">🎨 UI/UX at Agency B</div></div>
+    <div class="tile left" data-index="2"><div class="tile-content">🧠 ML Intern at Company C</div></div>
+    <div class="tile right" data-index="3"><div class="tile-content">🚀 Web Dev at Startup D</div></div>
+    <div class="tile left" data-index="4"><div class="tile-content">📱 Freelance App Work</div></div>
+    <div class="tile right" data-index="5"><div class="tile-content">💼 Now: Open to Work</div></div>
+  </div>
+
+  <script>
+    const ball = document.getElementById("ball");
+    const tiles = document.querySelectorAll(".tile");
+
+    // Initialize ball position at tile 0
+    const initialTile = tiles[0];
+    let currentIndex = 0;
+
+    positionBallAtTile(initialTile);
+
+    // Handle tile clicks
+    tiles.forEach((tile, index) => {
+      tile.addEventListener("click", () => {
+        if (index === currentIndex) return; // do nothing if already there
+
+        const rect = tile.getBoundingClientRect();
+        const containerRect = document.querySelector('.timeline').getBoundingClientRect();
+
+        const targetY = tile.offsetTop;
+        const isLeft = tile.classList.contains("left");
+        const targetX = isLeft ? "30%" : "70%";
+
+        gsap.to(ball, {
+          duration: 0.6,
+          top: targetY,
+          left: targetX,
+          ease: "bounce.out"
+        });
+
+        currentIndex = index;
+      });
+    });
+
+    function positionBallAtTile(tile) {
+      const isLeft = tile.classList.contains("left");
+      const startX = isLeft ? "30%" : "70%";
+      ball.style.top = tile.offsetTop + "px";
+      ball.style.left = startX;
+    }
+  </script>
+</body>
+</html>

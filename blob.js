@@ -30,6 +30,7 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   // Add orbit controls (optional, for mouse interaction)
   const controls = new OrbitControls(camera, renderer.domElement);
+  
   controls.enableDamping = true;
 
   // Create geometry (starting with a sphere)
